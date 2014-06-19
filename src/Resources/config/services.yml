@@ -1,0 +1,3 @@
+services:
+    contao_loader:
+        class: Contao\ContaoBundle\Routing\ContaoLoader
