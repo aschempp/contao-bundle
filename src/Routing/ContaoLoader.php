@@ -26,6 +26,14 @@ class ContaoLoader extends Loader
 {
     public function load($resource, $type = null)
     {
+        $addlang = false;
+        $suffix  = 'html';
+
+	    if (isset($GLOBALS['TL_CONFIG'])) {
+		    $addlang = $GLOBALS['TL_CONFIG']['addLanguageToUrl'];
+	        $suffix  = substr($GLOBALS['TL_CONFIG']['urlSuffix'], 1);
+	    }
+
         $routes = new RouteCollection();
 
         $defaults = array(
@@ -34,8 +42,6 @@ class ContaoLoader extends Loader
 
         $pattern = '/{alias}';
         $require = array('alias' => '.*');
-
-        $suffix = substr($GLOBALS['TL_CONFIG']['urlSuffix'], 1);
 
         // URL suffix
         if ($suffix != '') {
@@ -46,7 +52,7 @@ class ContaoLoader extends Loader
         }
 
         // Add language to URL
-        if ($GLOBALS['TL_CONFIG']['addLanguageToUrl'] != '') {
+        if ($addlang) {
             $require['_locale'] = '[a-z]{2}(\-[A-Z]{2})?';
 
             $route = new Route('/{_locale}' . $pattern, $defaults, $require);
