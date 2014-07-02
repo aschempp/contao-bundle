@@ -1,3 +1,5 @@
 services:
     contao_loader:
         class: Contao\ContaoBundle\Routing\ContaoLoader
+        tags:
+            - { name: routing.loader }
