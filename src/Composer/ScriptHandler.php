@@ -23,12 +23,12 @@ class ScriptHandler
 {
     public static function setupParameters()
     {
-        $fs  = new Filesystem();
-		$dir = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
+        $fs   = new Filesystem();
+		$root = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
 
-        if (!$fs->exists($dir . '/app/config/parameters.yml')) {
+        if (!$fs->exists($root . '/app/config/parameters.yml')) {
             $secret = md5(uniqid(mt_rand(), true));
-            $fs->dumpFile($dir . '/app/config/parameters.yml', "parameters:\n    locale: en\n    secret: $secret\n");
+            $fs->dumpFile($root . '/app/config/parameters.yml', "parameters:\n    locale: en\n    secret: $secret\n");
         }
     }
 }
