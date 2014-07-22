@@ -14,6 +14,7 @@ namespace Contao\ContaoBundle;
 
 use Contao\ClassLoader;
 use Contao\Config;
+use Contao\ContaoBundle\Event\ContaoSubscriber;
 use Contao\Environment;
 use Contao\Input;
 use Contao\RequestToken;
@@ -41,6 +42,11 @@ class ContaoBundle extends Bundle
 
         // Register the container globally
         $GLOBALS['container'] = $this->container;
+
+        /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
+        $dispatcher = $this->container->get('event_dispatcher');
+        $subscriber = new ContaoSubscriber();
+        $dispatcher->addSubscriber($subscriber);
     }
 
     public function build(ContainerBuilder $container)
@@ -169,17 +175,7 @@ class ContaoBundle extends Bundle
 
         $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
 
-        // Show the "insecure document root" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && substr(Environment::get('path'), -4) == '/web' && !Config::get('ignoreInsecureRoot')) {
-            die_nicely('be_insecure', 'Your installation is not secure. Please set the document root to the <code>/web</code> subfolder.');
-        }
-
         $objConfig = Config::getInstance();
-
-        // Show the "incomplete installation" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$GLOBALS['objConfig']->isComplete()) {
-            die_nicely('be_incomplete', 'The installation has not been completed. Open the Contao install tool to continue.');
-        }
 
         Input::initialize();
 
@@ -214,20 +210,5 @@ class ContaoBundle extends Bundle
         }
 
         RequestToken::initialize();
-
-        // Check the request token upon POST requests
-        if ($_POST && !RequestToken::validate(Input::post('REQUEST_TOKEN'))) {
-
-            // Force a JavaScript redirect upon Ajax requests (IE requires absolute link)
-            if (Environment::get('isAjaxRequest')) {
-                header('HTTP/1.1 204 No Content');
-                header('X-Ajax-Location: ' . Environment::get('base') . 'contao/');
-            } else {
-                header('HTTP/1.1 400 Bad Request');
-                die_nicely('be_referer', 'Invalid request token. Please <a href="javascript:window.location.href=window.location.href">go back</a> and try again.');
-            }
-
-            exit;
-        }
     }
 }
