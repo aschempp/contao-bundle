@@ -24,7 +24,7 @@ class FrontendController extends Controller
 {
     public function indexAction()
     {
-		$controller = new FrontendIndex;
-		$controller->run();
+        $controller = new FrontendIndex;
+        $controller->run();
     }
 }

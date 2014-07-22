@@ -29,10 +29,10 @@ class ContaoLoader extends Loader
         $addlang = false;
         $suffix  = 'html';
 
-	    if (isset($GLOBALS['TL_CONFIG'])) {
-		    $addlang = $GLOBALS['TL_CONFIG']['addLanguageToUrl'];
-	        $suffix  = substr($GLOBALS['TL_CONFIG']['urlSuffix'], 1);
-	    }
+        if (isset($GLOBALS['TL_CONFIG'])) {
+            $addlang = $GLOBALS['TL_CONFIG']['addLanguageToUrl'];
+            $suffix  = substr($GLOBALS['TL_CONFIG']['urlSuffix'], 1);
+        }
 
         $routes = new RouteCollection();
 

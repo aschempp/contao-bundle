@@ -12,6 +12,7 @@
 
 namespace Contao\ContaoBundle\Command;
 
+use Contao\Config;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,6 @@ class AutoloadCommand extends ContainerAwareCommand
             ->setDefinition([
                 new InputArgument('modules', InputArgument::OPTIONAL, 'An optional list of comma separated modules'),
                 new InputOption('override', '-o', InputOption::VALUE_NONE, 'Override existing autoload.php files.'),
-
             ])
             ->setDescription('Generate the Contao autoload.php files')
         ;
@@ -46,26 +46,27 @@ class AutoloadCommand extends ContainerAwareCommand
         $fs      = new Filesystem();
         $modules = $input->getArgument('modules');
         $year    = date('Y');
-        $root    = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
 
         // Build the modules array
         if ($modules === null) {
-            $dirs = Finder::create()->directories()->in($root . '/system/modules');
+            $dirs = Finder::create()->directories()->in(TL_ROOT . '/system/modules');
 
             foreach ($dirs as $dir) {
                 $modules[] = $dir->getFilename();
             }
         } else {
-            $modules = array_map('trim', explode(',', $modules));
+            $modules = trimsplit(',', $modules);
         }
 
+        $tplExts = trimsplit(',', Config::get('templateFiles'));
+
         foreach ($modules as $module) {
-            if (!$fs->exists($root . '/system/modules/' . $module)) {
+            if (!$fs->exists(TL_ROOT . '/system/modules/' . $module)) {
                 throw new Exception('Invalid module name "' . $module . '"');
             }
 
             // The autoload.php file exists
-            if (!$input->getOption('override') && $fs->exists($root . '/system/modules/' . $module . '/config/autoload.php')) {
+            if (!$input->getOption('override') && $fs->exists(TL_ROOT . '/system/modules/' . $module . '/config/autoload.php')) {
                 $output->writeln("  The autoload.php file of the $module module exists. Use the <info>--override</info> option to override it.");
                 continue;
             }
@@ -82,8 +83,8 @@ class AutoloadCommand extends ContainerAwareCommand
             ];
 
             // Create the autoload.ini file if it does not yet exist
-            if (!$fs->exists($root . '/system/modules/' . $module . '/config/autoload.ini')) {
-                $fs->dumpFile($root . '/system/modules/' . $module . '/config/autoload.ini',
+            if (!$fs->exists(TL_ROOT . '/system/modules/' . $module . '/config/autoload.ini')) {
+                $fs->dumpFile(TL_ROOT . '/system/modules/' . $module . '/config/autoload.ini',
 <<<EOT
 ;;
 ; List modules which are required to be loaded beforehand
@@ -118,10 +119,10 @@ EOT
 
             $defaultConfig = array_merge(
                 $defaultConfig,
-                parse_ini_file($root . '/system/modules/' . $module . '/config/autoload.ini', true)
+                parse_ini_file(TL_ROOT . '/system/modules/' . $module . '/config/autoload.ini', true)
             );
 
-            $fileObjects = Finder::create()->files()->name('*.php')->in($root . '/system/modules/' . $module);
+            $fileObjects = Finder::create()->files()->name('*.php')->in(TL_ROOT . '/system/modules/' . $module);
 
             // Add the files
             foreach ($fileObjects as $fileObject) {
@@ -134,7 +135,7 @@ EOT
                 $config = $defaultConfig;
 
                 // Search for a path configuration (see #4776)
-                foreach ($defaultConfig as $pattern=>$pathConfig) {
+                foreach ($defaultConfig as $pattern => $pathConfig) {
                     if (is_array($pathConfig) && fnmatch($pattern, $relpath)) {
                         $config = array_merge($defaultConfig, $pathConfig);
                         break;
@@ -150,14 +151,14 @@ EOT
                 $matches = [];
 
                 // Store the file size for fread()
-                $size = filesize($root . '/system/modules/' . $module . '/' . $relpath);
-                $fh   = fopen($root . '/system/modules/' . $module . '/' . $relpath, 'rb');
+                $size = filesize(TL_ROOT . '/system/modules/' . $module . '/' . $relpath);
+                $fh   = fopen(TL_ROOT . '/system/modules/' . $module . '/' . $relpath, 'rb');
 
                 // Read until a class or interface definition has been found
                 while (!preg_match('/(class|interface) ' . preg_quote(basename($relpath, '.php'), '/') . '/', $buffer, $matches) && $size > 0 && !feof($fh)) {
-                    $length  = min(512, $size);
+                    $length = min(512, $size);
                     $buffer .= fread($fh, $length);
-                    $size   -= $length; // see #4876
+                    $size -= $length; // see #4876
                 }
 
                 fclose($fh);
@@ -186,7 +187,7 @@ EOT
                         }
                     }
 
-                    $namespace .=  '\\';
+                    $namespace .= '\\';
                 }
 
                 // Register the class
@@ -201,8 +202,8 @@ EOT
             $tplLoader = [];
 
             // Scan for templates
-            if ($fs->exists($root . '/system/modules/' . $module . '/templates')) {
-                $fileObjects = Finder::create()->files()->name('/.*(tpl|html5|xhtml)$/')->in($root . '/system/modules/' . $module . '/templates');
+            if ($fs->exists(TL_ROOT . '/system/modules/' . $module . '/templates')) {
+                $fileObjects = Finder::create()->files()->name('/.*(' . implode('|', $tplExts) . ')$/')->in(TL_ROOT . '/system/modules/' . $module . '/templates');
 
                 // Add the files
                 foreach ($fileObjects as $fileObject) {
@@ -210,7 +211,7 @@ EOT
                     $relpath = 'templates/' . $fileObject->getRelativePathname();
 
                     // Search for a path configuration (see #4776)
-                    foreach ($defaultConfig as $pattern=>$pathConfig) {
+                    foreach ($defaultConfig as $pattern => $pathConfig) {
                         if (is_array($pathConfig) && fnmatch($pattern, $relpath)) {
                             $config = array_merge($defaultConfig, $pathConfig);
                             break;
@@ -222,12 +223,11 @@ EOT
                         continue;
                     }
 
-                    $tplExts   = ['tpl', 'html5', 'xhtml'];
                     $extension = pathinfo($fileObject->getFilename(), PATHINFO_EXTENSION);
 
                     // Add all known template types (see #5857)
                     if (in_array($extension, $tplExts)) {
-                        $relpath         = str_replace($root . '/', '', $fileObject->getPathname());
+                        $relpath         = str_replace(TL_ROOT . '/', '', $fileObject->getPathname());
                         $key             = basename($relpath, strrchr($relpath, '.'));
                         $tplLoader[$key] = dirname($relpath);
                         $tplWidth        = max(strlen($key), $tplWidth);
@@ -297,7 +297,7 @@ EOT
 
                 $group = null;
 
-                foreach ($classLoader as $class=>$path) {
+                foreach ($classLoader as $class => $path) {
                     $relpath = str_replace('system/modules/' . $module . '/', '', $path);
                     $basedir = substr($relpath, 0, strpos($relpath, '/'));
 
@@ -312,7 +312,7 @@ EOT
                     }
 
                     $class = "'" . $class . "'";
-                    $buffer .= "\t" . str_pad($class, $classWidth+2) . " => '$path',\n";
+                    $buffer .= "\t" . str_pad($class, $classWidth + 2) . " => '$path',\n";
                 }
 
                 $buffer .= "]);\n";
@@ -330,16 +330,16 @@ TemplateLoader::addFiles(
 EOT
                 ;
 
-                foreach ($tplLoader as $name=>$path) {
+                foreach ($tplLoader as $name => $path) {
                     $name = "'" . $name . "'";
-                    $buffer .= "\t" . str_pad($name, $tplWidth+2) . " => '$path',\n";
+                    $buffer .= "\t" . str_pad($name, $tplWidth + 2) . " => '$path',\n";
                 }
 
                 $buffer .= "]);\n";
             }
 
             // Generate the file
-            $fs->dumpFile($root . '/system/modules/' . $module . '/config/autoload.php', $buffer);
+            $fs->dumpFile(TL_ROOT . '/system/modules/' . $module . '/config/autoload.php', $buffer);
 
             $output->writeln("  The autoload.php file of the $module module has been created.");
             unset($buffer);

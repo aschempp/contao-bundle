@@ -33,11 +33,6 @@ class VersionCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!defined('VERSION')) {
-	        $root = dirname(dirname(dirname(dirname(dirname(__DIR__)))));
-            require $root . '/system/config/constants.php';
-        }
-
         $output->writeln(VERSION . '.' . BUILD);
     }
 }
