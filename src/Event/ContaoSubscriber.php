@@ -22,8 +22,8 @@ class ContaoSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            'kernel.request'    => array('onKernelRequest', 0),
-            'kernel.exception'  => array('onKernelException', 0),
+            'kernel.request'    => array('onKernelRequest', -50),
+            'kernel.exception'  => array('onKernelException', -50),
         );
     }
 
