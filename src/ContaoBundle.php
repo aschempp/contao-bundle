@@ -120,7 +120,7 @@ class ContaoBundle extends Bundle
         Config::preload();
 
         // Override the SwiftMailer defaults
-        Swift::init(function() {
+        Swift::init(function () {
             $preferences = Swift_Preferences::getInstance();
             $preferences->setTempDir(TL_ROOT . '/system/tmp')->setCacheType('disk');
             $preferences->setCharset(Config::get('characterSet'));
@@ -152,8 +152,6 @@ class ContaoBundle extends Bundle
 
         // Set the default language
         if (!isset($_SESSION['TL_LANGUAGE'])) {
-
-            // Check the user languages
             $langs = Environment::get('httpAcceptLanguage');
             array_push($langs, 'en'); // see #6533
 
@@ -177,7 +175,7 @@ class ContaoBundle extends Bundle
         $objConfig = Config::getInstance();
 
         // Show the "incomplete installation" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$GLOBALS['objConfig']->isComplete()) {
+        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$objConfig->isComplete()) {
             die_nicely('be_incomplete', 'The installation has not been completed. Open the Contao install tool to continue.');
         }
 
