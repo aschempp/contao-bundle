@@ -45,7 +45,7 @@ class ContaoBundle extends Bundle
 
         /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
         $dispatcher = $this->container->get('event_dispatcher');
-        $subscriber = new ContaoSubscriber();
+        $subscriber = new ContaoSubscriber($this->container);
         $dispatcher->addSubscriber($subscriber);
     }
 

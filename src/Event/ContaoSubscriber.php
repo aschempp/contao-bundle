@@ -16,13 +16,27 @@ use Contao\ContaoBundle\Exception\IncompleteInstallationException;
 use Contao\ContaoBundle\Exception\InsecureDocumentRootException;
 use Contao\ContaoBundle\Exception\InvalidRequestTokenException;
 use Contao\ContaoBundle\Exception\TemplatedMessageException;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
-class ContaoSubscriber implements EventSubscriberInterface
+class ContaoSubscriber extends ContainerAware implements EventSubscriberInterface
 {
+    /**
+     * Construct the event subscriber
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
+    /**
+     * Returns events this subscriber will handle
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(
