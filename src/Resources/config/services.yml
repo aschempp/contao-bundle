@@ -1,5 +1,11 @@
 services:
-    contao_loader:
+    contao.loader:
         class: Contao\ContaoBundle\Routing\ContaoLoader
         tags:
             - { name: routing.loader }
+        arguments: ['@service_container']
+
+    contao.config:
+        class: Contao\Config
+        factory_class: Contao\Config
+        factory_method: getInstance
