@@ -59,12 +59,12 @@ class ContaoSubscriber extends ContainerAware implements EventSubscriberInterfac
     public function onKernelRequest(GetResponseEvent $event)
     {
         // Show the "insecure document root" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && substr(\Environment::get('path'), -4) == '/web' && !\Config::get('ignoreInsecureRoot')) {
+        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && substr(\Environment::get('path'), -4) == '/web' && !$this->container->get('contao.config')->get('ignoreInsecureRoot')) {
             throw new InsecureDocumentRootException('be_insecure', 'Your installation is not secure. Please set the document root to the <code>/web</code> subfolder.');
         }
 
         // Show the "incomplete installation" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$GLOBALS['objConfig']->isComplete()) {
+        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$this->container->get('contao.config')->isComplete()) {
             throw new IncompleteInstallationException('be_incomplete', 'The installation has not been completed. Open the Contao install tool to continue.');
         }
 

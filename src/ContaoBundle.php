@@ -43,6 +43,20 @@ class ContaoBundle extends Bundle
         // Register the container globally
         $GLOBALS['container'] = $this->container;
 
+        // Add contao Config class to the DIC
+        // @todo this can probably be done in a config YAML file
+        $container->setParameter('contao.config.class', 'Contao\Config');
+        $container->setDefinition(
+            'contao.config',
+            new Definition(
+                '%contao.config.class%'
+            )
+        )->setFactoryClass(
+            '%contao.config.class%'
+        )->setFactoryMethod(
+            'getInstance'
+        );
+
         /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
         $dispatcher = $this->container->get('event_dispatcher');
         $subscriber = new ContaoSubscriber($this->container);
