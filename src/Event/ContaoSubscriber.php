@@ -106,7 +106,6 @@ class ContaoSubscriber extends ContainerAware implements EventSubscriberInterfac
             $event->setResponse(
                 new Response($exception->getTemplatedMessage())
             );
-
         }
     }
 }
