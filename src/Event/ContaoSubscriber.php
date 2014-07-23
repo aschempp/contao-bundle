@@ -93,16 +93,11 @@ class ContaoSubscriber implements EventSubscriberInterface
     {
         ob_start();
 
-        if (file_exists(TL_ROOT . "/templates/$strTemplate.html5"))
-        {
+        if (file_exists(TL_ROOT . "/templates/$strTemplate.html5")) {
             include TL_ROOT . "/templates/$strTemplate.html5";
-        }
-        elseif (file_exists(TL_ROOT . "/system/modules/core/templates/backend/$strTemplate.html5"))
-        {
+        } elseif (file_exists(TL_ROOT . "/system/modules/core/templates/backend/$strTemplate.html5")) {
             include TL_ROOT . "/system/modules/core/templates/backend/$strTemplate.html5";
-        }
-        else
-        {
+        } else {
             echo $strFallback;
         }
 

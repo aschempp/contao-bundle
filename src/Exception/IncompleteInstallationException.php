@@ -12,6 +12,6 @@
 
 namespace Contao\ContaoBundle\Exception;
 
-class IncompleteInstallationException extends \Exception {
-
+class IncompleteInstallationException extends \Exception
+{
 } 

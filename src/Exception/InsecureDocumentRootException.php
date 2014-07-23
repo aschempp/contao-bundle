@@ -12,6 +12,6 @@
 
 namespace Contao\ContaoBundle\Exception;
 
-class InsecureDocumentRootException extends \Exception {
-
+class InsecureDocumentRootException extends \Exception
+{
 } 
