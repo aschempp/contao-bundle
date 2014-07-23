@@ -12,6 +12,6 @@
 
 namespace Contao\ContaoBundle\Exception;
 
-class InvalidRequestTokenException extends \Exception
+class InvalidRequestTokenException extends TemplatedMessageException
 {
 } 
