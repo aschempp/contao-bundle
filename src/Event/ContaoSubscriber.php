@@ -53,17 +53,7 @@ class ContaoSubscriber implements EventSubscriberInterface
 
         // Check the request token upon POST requests
         if ($_POST && !\RequestToken::validate(\Input::post('REQUEST_TOKEN'))) {
-
-            // Force a JavaScript redirect upon Ajax requests (IE requires absolute link)
-            if (\Environment::get('isAjaxRequest')) {
-                // @todo this is wrong
-                header('HTTP/1.1 204 No Content');
-                header('X-Ajax-Location: ' . Environment::get('base') . 'contao/');
-                exit;
-
-            } else {
-                throw new InvalidRequestTokenException('be_referer', 'Invalid request token. Please <a href="javascript:window.location.href=window.location.href">go back</a> and try again.');
-            }
+            throw new InvalidRequestTokenException('be_referer', 'Invalid request token. Please <a href="javascript:window.location.href=window.location.href">go back</a> and try again.');
         }
     }
 
@@ -73,12 +63,26 @@ class ContaoSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof InvalidRequestTokenException) {
 
-            $event->setResponse(
-                new Response(
+            // Force a JavaScript redirect upon Ajax requests (IE requires absolute link)
+            if (\Environment::get('isAjaxRequest')) {
+
+                $response = new Response(
+                    '',
+                    Response::HTTP_NO_CONTENT,
+                    array(
+                        'X-Ajax-Location' => \Environment::get('base') . 'contao/'
+                    )
+                );
+
+            } else {
+
+                $response = new Response(
                     $exception->getTemplatedMessage(),
                     Response::HTTP_BAD_REQUEST
-                )
-            );
+                );
+            }
+
+            $event->setResponse($response);
 
         } elseif ($exception instanceof TemplatedMessageException) {
 
