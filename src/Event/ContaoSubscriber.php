@@ -58,6 +58,8 @@ class ContaoSubscriber extends ContainerAware implements EventSubscriberInterfac
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
+        $request = $event->getRequest();
+
         // Show the "insecure document root" message
         if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && substr(\Environment::get('path'), -4) == '/web' && !$this->container->get('contao.config')->get('ignoreInsecureRoot')) {
             throw new InsecureDocumentRootException('be_insecure', 'Your installation is not secure. Please set the document root to the <code>/web</code> subfolder.');
@@ -69,7 +71,7 @@ class ContaoSubscriber extends ContainerAware implements EventSubscriberInterfac
         }
 
         // Check the request token upon POST requests
-        if ($_POST && !\RequestToken::validate(\Input::post('REQUEST_TOKEN'))) {
+        if ($request->isMethod('POST') && !\RequestToken::validate(\Input::post('REQUEST_TOKEN'))) {
             throw new InvalidRequestTokenException('be_referer', 'Invalid request token. Please <a href="javascript:window.location.href=window.location.href">go back</a> and try again.');
         }
     }
@@ -77,11 +79,12 @@ class ContaoSubscriber extends ContainerAware implements EventSubscriberInterfac
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
+        $request = $event->getRequest();
 
         if ($exception instanceof InvalidRequestTokenException) {
 
             // Force a JavaScript redirect upon Ajax requests (IE requires absolute link)
-            if (\Environment::get('isAjaxRequest')) {
+            if ($request->isXmlHttpRequest()) {
 
                 $response = new Response(
                     '',
