@@ -28,6 +28,17 @@ class ContaoSubscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * Check if Contao Core is successfully bootet or throw appropriate messages if not
+     *
+     * @param GetResponseEvent $event
+     *
+     * @throws \Contao\ContaoBundle\Exception\IncompleteInstallationException
+     * @throws \Contao\ContaoBundle\Exception\InsecureDocumentRootException
+     * @throws \Contao\ContaoBundle\Exception\InvalidRequestTokenException
+     *
+     * @todo we should likely not check for PHP_SAPI or TL_SCRIPT here, as these routes should handle the exception correctly
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         // Show the "insecure document root" message
