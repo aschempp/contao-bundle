@@ -20,6 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Exception;
 
 /**
@@ -51,6 +52,7 @@ class AutoloadCommand extends ContainerAwareCommand
         if ($modules === null) {
             $dirs = Finder::create()->directories()->in(TL_ROOT . '/system/modules');
 
+            /** @var SplFileInfo $dir */
             foreach ($dirs as $dir) {
                 $modules[] = $dir->getFilename();
             }
@@ -122,11 +124,11 @@ EOT
                 parse_ini_file(TL_ROOT . '/system/modules/' . $module . '/config/autoload.ini', true)
             );
 
-            $fileObjects = Finder::create()->files()->name('*.php')->in(TL_ROOT . '/system/modules/' . $module);
+            $files = Finder::create()->files()->name('*.php')->in(TL_ROOT . '/system/modules/' . $module);
 
-            // Add the files
-            foreach ($fileObjects as $fileObject) {
-                $relpath = $fileObject->getRelativePathname();
+            /** @var SplFileInfo $file */
+            foreach ($files as $file) {
+                $relpath = $file->getRelativePathname();
 
                 if (strncmp($relpath, 'assets/', 7) === 0 || strncmp($relpath, 'config/', 7) === 0 || strncmp($relpath, 'dca/', 4) === 0 || strncmp($relpath, 'languages/', 10) === 0 || strncmp($relpath, 'templates/', 10) === 0) {
                     continue;
@@ -203,12 +205,12 @@ EOT
 
             // Scan for templates
             if ($fs->exists(TL_ROOT . '/system/modules/' . $module . '/templates')) {
-                $fileObjects = Finder::create()->files()->name('/.*(' . implode('|', $tplExts) . ')$/')->in(TL_ROOT . '/system/modules/' . $module . '/templates');
+                $files = Finder::create()->files()->name('/.*(' . implode('|', $tplExts) . ')$/')->in(TL_ROOT . '/system/modules/' . $module . '/templates');
 
                 // Add the files
-                foreach ($fileObjects as $fileObject) {
+                foreach ($files as $file) {
                     $config  = $defaultConfig;
-                    $relpath = 'templates/' . $fileObject->getRelativePathname();
+                    $relpath = 'templates/' . $file->getRelativePathname();
 
                     // Search for a path configuration (see #4776)
                     foreach ($defaultConfig as $pattern => $pathConfig) {
@@ -223,11 +225,11 @@ EOT
                         continue;
                     }
 
-                    $extension = pathinfo($fileObject->getFilename(), PATHINFO_EXTENSION);
+                    $extension = pathinfo($file->getFilename(), PATHINFO_EXTENSION);
 
                     // Add all known template types (see #5857)
                     if (in_array($extension, $tplExts)) {
-                        $relpath         = str_replace(TL_ROOT . '/', '', $fileObject->getPathname());
+                        $relpath         = str_replace(TL_ROOT . '/', '', $file->getPathname());
                         $key             = basename($relpath, strrchr($relpath, '.'));
                         $tplLoader[$key] = dirname($relpath);
                         $tplWidth        = max(strlen($key), $tplWidth);

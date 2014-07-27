@@ -1,17 +1,20 @@
 {
-	"name": "contao/contao-bundle",
-	"type": "library",
-	"description": "Contao 4 Symfony bundle",
-	"license": "LGPL-3.0+",
-	"authors": [
-		{
-			"name": "Leo Feyer",
-			"homepage": "https://github.com/leofeyer"
-		}
-	],
-	"autoload": {
-		"psr-4": {
-			"Contao\\ContaoBundle\\": "src/"
-		}
-	}
+    "name": "contao/contao-bundle",
+    "type": "library",
+    "description": "Contao 4 Symfony bundle",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Leo Feyer",
+            "homepage": "https://github.com/leofeyer"
+        }
+    ],
+    "require": {
+        "contao/contao-library": "dev-develop"
+    },
+    "autoload": {
+        "psr-4": {
+            "Contao\\ContaoBundle\\": "src/"
+        }
+    }
 }
