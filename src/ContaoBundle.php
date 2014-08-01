@@ -35,19 +35,12 @@ class ContaoBundle extends Bundle
 
     public function boot()
     {
-        if (!function_exists('__error')) {
-            $this->initializeContao();
-        }
-
-        // Register the container globally
-        $GLOBALS['container'] = $this->container;
+        $this->initializeContao();
     }
 
     public function build(ContainerBuilder $container)
     {
-        if (!function_exists('__error')) {
-            $this->initializeContao();
-        }
+        $this->initializeContao();
 
         // Complete the database settings
         $container->setParameter('database_driver', 'pdo_mysql');
@@ -80,6 +73,10 @@ class ContaoBundle extends Bundle
     protected function initializeContao()
     {
         global $objConfig;
+
+        if ($objConfig !== null) {
+            return;
+        }
 
         if (!defined('TL_MODE')) {
             define('TL_MODE', 'FE');
@@ -136,6 +133,8 @@ class ContaoBundle extends Bundle
         } catch (UnresolvableDependenciesException $e) {
             die($e->getMessage()); // see #6343
         }
+
+        System::setContainer($this->container);
 
         // Define the relative path to the installation (see #5339)
         if (Config::has('websitePath') && TL_SCRIPT != 'contao/install.php') {
