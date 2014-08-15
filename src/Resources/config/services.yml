@@ -9,3 +9,8 @@ services:
         class: Contao\Config
         factory_class: Contao\Config
         factory_method: getInstance
+
+    contao.listener.post_flush:
+        class: Contao\ContaoBundle\EventListener\PostFlushListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
