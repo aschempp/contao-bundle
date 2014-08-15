@@ -27,7 +27,7 @@ class VersionCommand extends ContainerAwareCommand
     {
         $this
             ->setName('contao:version')
-            ->setDescription('Display the Contao version number')
+            ->setDescription('Displays the Contao version number')
         ;
     }
 
