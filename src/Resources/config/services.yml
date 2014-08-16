@@ -14,3 +14,8 @@ services:
         class: Contao\ContaoBundle\EventListener\PostFlushListener
         tags:
             - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
+
+    contao.listener.response_exception:
+        class: Contao\ContaoBundle\EventListener\ResponseExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
