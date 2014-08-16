@@ -10,6 +10,11 @@ services:
         factory_class: Contao\Config
         factory_method: getInstance
 
+    contao.listener.output_from_cache:
+        class: Contao\ContaoBundle\EventListener\OutputFromCacheListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 200 }
+
     contao.listener.post_flush:
         class: Contao\ContaoBundle\EventListener\PostFlushListener
         tags:
