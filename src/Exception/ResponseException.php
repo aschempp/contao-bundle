@@ -15,7 +15,7 @@ namespace Contao\ContaoBundle\Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ResponseException extends HttpException
+class ResponseException extends HttpException implements ResponseExceptionInterface
 {
     /**
      * Response content
