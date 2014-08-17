@@ -1,13 +1,17 @@
+parameters:
+    contao.loader.class: Contao\ContaoBundle\Routing\ContaoLoader
+    contao.config.class: Contao\Config
+
 services:
     contao.loader:
-        class: Contao\ContaoBundle\Routing\ContaoLoader
+        class: %contao.loader.class%
         tags:
             - { name: routing.loader }
         arguments: ['@contao.config']
 
     contao.config:
-        class: Contao\Config
-        factory_class: Contao\Config
+        class: %contao.config.class%
+        factory_class: %contao.config.class%
         factory_method: getInstance
 
     contao.listener.output_from_cache:
