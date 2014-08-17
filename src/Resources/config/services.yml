@@ -1,6 +1,8 @@
 parameters:
     contao.loader.class: Contao\ContaoBundle\Routing\ContaoLoader
     contao.config.class: Contao\Config
+    contao.database.class: Contao\Database
+    contao.environment.class: Contao\Environment
 
 services:
     contao.loader:
@@ -12,6 +14,16 @@ services:
     contao.config:
         class: %contao.config.class%
         factory_class: %contao.config.class%
+        factory_method: getInstance
+
+    contao.database:
+        class: %contao.database.class%
+        factory_class: %contao.database.class%
+        factory_method: getInstance
+
+    contao.environment:
+        class: %contao.environment.class%
+        factory_class: %contao.environment.class%
         factory_method: getInstance
 
     contao.listener.output_from_cache:
