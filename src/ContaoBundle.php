@@ -20,9 +20,6 @@ use Contao\RequestToken;
 use Contao\System;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Swift;
-use Swift_Preferences;
-use UnresolvableDependenciesException;
 
 /**
  * Initializes Contao
@@ -117,8 +114,8 @@ class ContaoBundle extends Bundle
         Config::preload();
 
         // Override the SwiftMailer defaults
-        Swift::init(function () {
-            $preferences = Swift_Preferences::getInstance();
+        \Swift::init(function () {
+            $preferences = \Swift_Preferences::getInstance();
             $preferences->setTempDir(TL_ROOT . '/system/tmp')->setCacheType('disk');
             $preferences->setCharset(Config::get('characterSet'));
         });
@@ -130,7 +127,7 @@ class ContaoBundle extends Bundle
         // Try to load the modules
         try {
             ClassLoader::scanAndRegister();
-        } catch (UnresolvableDependenciesException $e) {
+        } catch (\UnresolvableDependenciesException $e) {
             die($e->getMessage()); // see #6343
         }
 

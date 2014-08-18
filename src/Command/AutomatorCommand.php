@@ -19,8 +19,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * Triggers a Contao automator task
@@ -55,8 +53,8 @@ class AutomatorCommand extends ContainerAwareCommand
         $commands = [];
 
         // Find all public methods
-        $class   = new ReflectionClass('Automator');
-        $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+        $class   = new \ReflectionClass('Automator');
+        $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
         foreach ($methods as $method) {
             if ($method->class == 'Contao\Automator' && $method->name != '__construct') {
