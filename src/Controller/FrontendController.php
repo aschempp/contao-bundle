@@ -39,8 +39,7 @@ class FrontendController extends SymfonyController
             $controller = new FrontendIndex;
             $controller->run();
 
-            $buffer = ob_get_contents();
-            ob_end_clean();
+            $buffer = ob_get_clean();
         }
 
         return new Response($buffer);
@@ -122,8 +121,7 @@ class FrontendController extends SymfonyController
         }
 
         // Read the buffer
-        $buffer = ob_get_contents();
-        ob_end_clean();
+        $buffer = ob_get_clean();
 
         // Session required to determine the referer
         $session = Session::getInstance();
