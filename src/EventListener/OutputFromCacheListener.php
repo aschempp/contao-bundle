@@ -25,6 +25,25 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  */
 class OutputFromCacheListener
 {
+    private $config;
+
+    /**
+     * Constructor
+     *
+     * @param Config $config The Contao config
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * Output cache for current URL if available before the router handles anything
+     *
+     * @param GetResponseEvent $event The kernel.request event
+     *
+     * @throws \Exception
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         // Build the page if a user is (potentially) logged in or there is POST data

@@ -14,6 +14,7 @@ services:
         class: Contao\ContaoBundle\EventListener\OutputFromCacheListener
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 200 }
+        arguments: ['@contao.config']
 
     contao.listener.post_flush:
         class: Contao\ContaoBundle\EventListener\PostFlushListener
