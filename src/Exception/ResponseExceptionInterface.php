@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 interface ResponseExceptionInterface
 {
     /**
-     * Get response object
+     * Return the response object
      *
      * @return Response
      */

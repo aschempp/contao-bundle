@@ -14,21 +14,19 @@ namespace Contao\ContaoBundle\Exception;
 
 class TemplateResponseException extends ResponseException
 {
-    /**
-     * Template name
-     * @var string
-     */
     private $template;
 
     /**
-     * @param string     $template
-     * @param int        $statusCode
-     * @param string     $message
-     * @param array      $headers
-     * @param int        $code
-     * @param \Exception $previous
+     * Constructor
+     *
+     * @param string     $template   The template path
+     * @param int        $statusCode The HTTP status code
+     * @param array      $headers    An array of HTTP headers
+     * @param string     $message    The exception message
+     * @param int        $code       The exception code
+     * @param \Exception $previous   The previous exception
      */
-    public function __construct($template, $statusCode = 200, $message = null, array $headers = array(), $code = 0, \Exception $previous = null)
+    public function __construct($template, $statusCode = 200, array $headers = array(), $message = null, $code = 0, \Exception $previous = null)
     {
         $this->template = $template;
 
@@ -36,7 +34,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Get the template name
+     * Return the template name
      *
      * @return string
      */
@@ -46,7 +44,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Get response content from template and fall back to message
+     * Return the template content
      *
      * @return string
      */
@@ -54,7 +52,7 @@ class TemplateResponseException extends ResponseException
     {
         $strFile = $this->getTemplateFile();
 
-        if (false === $strFile) {
+        if ($strFile === false) {
             return $this->getMessage();
         }
 
@@ -65,25 +63,19 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Find and return the template file
-     * @return string|false
+     * Return the path to a custom template
+     *
+     * @return string|bool The custom template path or false if there is no custom template
      */
     protected function getTemplateFile()
     {
         if ($this->template == '') {
-
             return false;
-
         } else if (file_exists(TL_ROOT . "/templates/$this->template.html5")) {
-
             return TL_ROOT . "/templates/$this->template.html5";
-
         } elseif (file_exists(TL_ROOT . "/system/modules/core/templates/backend/$this->template.html5")) {
-
             return TL_ROOT . "/system/modules/core/templates/backend/$this->template.html5";
-
         } else {
-
             return false;
         }
     }

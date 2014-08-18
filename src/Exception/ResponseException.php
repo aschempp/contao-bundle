@@ -15,31 +15,51 @@ namespace Contao\ContaoBundle\Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class ResponseException extends HttpException implements ResponseExceptionInterface
+class ResponseException extends \RuntimeException implements ResponseExceptionInterface
 {
-    /**
-     * Response content
-     * @var string
-     */
     private $content;
+    private $statusCode;
+    private $headers;
+
 
     /**
-     * @param string     $content
-     * @param int        $statusCode
-     * @param array      $headers
-     * @param string     $message
-     * @param int        $code
-     * @param \Exception $previous
+     * Constructor
+     *
+     * @param string     $content    The content string
+     * @param int        $statusCode The HTTP status code
+     * @param array      $headers    An array of HTTP headers
+     * @param string     $message    The exception message
+     * @param int        $code       The exception code
+     * @param \Exception $previous   The previous exception
      */
-    public function __construct($content = '', $statusCode = 200, $message = null, array $headers = array(), $code = 0, \Exception $previous = null)
+    public function __construct($content = '', $statusCode = 200, array $headers = array(), $message = null, $code = 0, \Exception $previous = null)
     {
-        parent::__construct($statusCode, $message, $previous, $headers, $code);
+        $this->content = $content;
+        $this->statusCode = $statusCode;
+        $this->headers = $headers;
+
+        parent::__construct($message, $code, $previous);
     }
 
     /**
-     * Get response content
+     * Return the response object
      *
-     * @return string
+     * @return Response
+     */
+    public function getResponse()
+    {
+        $response = new Response($this->getContent(), $this->statusCode, $this->headers);
+
+        // Prevent the Symfony exception handler from overwriting the response status code
+        $response->headers->set('X-Status-Code', $this->statusCode);
+
+        return $response;
+    }
+
+    /**
+     * Get the response content
+     *
+     * @return string The response content
      */
     public function getContent()
     {
@@ -47,17 +67,22 @@ class ResponseException extends HttpException implements ResponseExceptionInterf
     }
 
     /**
-     * Get response object
+     * Get the HTTP status code
      *
-     * @return Response
+     * @return int The HTTP status code
      */
-    public function getResponse()
+    public function getStatusCode()
     {
-        $response = new Response($this->getContent(), $this->getStatusCode(), $this->getHeaders());
+        return $this->statusCode;
+    }
 
-        // Set the explicit status code to prevent Symfony exception handler from overwriting the Response status code
-        $response->headers->set('X-Status-Code', $this->getStatusCode());
-
-        return $response;
+    /**
+     * Get the array of HTTP headers
+     *
+     * @return array The array of HTTP headers
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }
