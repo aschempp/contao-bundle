@@ -60,7 +60,7 @@ class OutputFromCacheListener
         if (Environment::get('request') == '' || Environment::get('request') == 'index.php') {
 
             // Return if the language is added to the URL and the empty domain will be redirected
-            if (Config::get('addLanguageToUrl') && !Config::get('doNotRedirectEmpty')) {
+            if ($this->config->get('addLanguageToUrl') && !$this->config->get('doNotRedirectEmpty')) {
                 return;
             }
 
@@ -159,10 +159,10 @@ class OutputFromCacheListener
         }
 
         $response->headers->set('Vary', 'User-Agent', false);
-        $response->headers->set('Content-Type', $content . '; charset=' . Config::get('characterSet'));
+        $response->headers->set('Content-Type', $content . '; charset=' . $this->config->get('characterSet'));
 
         // Send the cache headers
-        if ($expire !== null && (Config::get('cacheMode') == 'both' || Config::get('cacheMode') == 'browser')) {
+        if ($expire !== null && ($this->config->('cacheMode') == 'both' || $this->config->get('cacheMode') == 'browser')) {
             $response->headers->set('Cache-Control', 'public, max-age=' . ($expire - time()));
             $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
             $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
