@@ -176,4 +176,4 @@ class OutputFromCacheListener
 
         $event->setResponse($response);
     }
-} 
+}
