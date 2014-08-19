@@ -12,6 +12,11 @@
 
 namespace Contao\ContaoBundle\Exception;
 
+/**
+ * Creates a response object from a template
+ *
+ * @author Andreas Schempp <http://terminal42.ch>
+ */
 class TemplateResponseException extends ResponseException
 {
     private $template;
@@ -19,14 +24,14 @@ class TemplateResponseException extends ResponseException
     /**
      * Constructor
      *
-     * @param string     $template   The template path
+     * @param string     $template   The template name
      * @param int        $statusCode The HTTP status code
      * @param array      $headers    An array of HTTP headers
      * @param string     $message    The exception message
      * @param int        $code       The exception code
      * @param \Exception $previous   The previous exception
      */
-    public function __construct($template, $statusCode = 200, array $headers = array(), $message = null, $code = 0, \Exception $previous = null)
+    public function __construct($template, $statusCode = 200, array $headers = [], $message = null, $code = 0, \Exception $previous = null)
     {
         $this->template = $template;
 
@@ -44,7 +49,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Return the template content
+     * Get the response content
      *
      * @return string
      */
@@ -63,7 +68,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Return the path to a custom template
+     * Search for a custom template and return the path
      *
      * @return string|bool The custom template path or false if there is no custom template
      */
@@ -71,12 +76,16 @@ class TemplateResponseException extends ResponseException
     {
         if ($this->template == '') {
             return false;
-        } else if (file_exists(TL_ROOT . "/templates/$this->template.html5")) {
-            return TL_ROOT . "/templates/$this->template.html5";
-        } elseif (file_exists(TL_ROOT . "/system/modules/core/templates/backend/$this->template.html5")) {
-            return TL_ROOT . "/system/modules/core/templates/backend/$this->template.html5";
-        } else {
-            return false;
         }
+
+        if (file_exists(TL_ROOT . '/templates/' . $this->template . '.html5')) {
+            return TL_ROOT . '/templates/' . $this->template . '.html5';
+        }
+
+        if (file_exists(TL_ROOT . '/system/modules/core/templates/backend/' . $this->template . '.html5')) {
+            return TL_ROOT . '/system/modules/core/templates/backend/' . $this->template . '.html5';
+        }
+
+        return false;
     }
 }
