@@ -15,6 +15,11 @@ namespace Contao\ContaoBundle\EventListener;
 use Contao\ContaoBundle\Exception\ResponseExceptionInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
+/**
+ * Sets the response if the exception is a response exception
+ *
+ * @author Andreas Schempp <http://terminal42.ch>
+ */
 class ResponseExceptionListener
 {
     public function onKernelException(GetResponseForExceptionEvent $event)

@@ -13,14 +13,17 @@
 namespace Contao\ContaoBundle\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
+/**
+ * Creates a response object from the exception content
+ *
+ * @author Andreas Schempp <http://terminal42.ch>
+ */
 class ResponseException extends \RuntimeException implements ResponseExceptionInterface
 {
     private $content;
     private $statusCode;
     private $headers;
-
 
     /**
      * Constructor
@@ -32,7 +35,7 @@ class ResponseException extends \RuntimeException implements ResponseExceptionIn
      * @param int        $code       The exception code
      * @param \Exception $previous   The previous exception
      */
-    public function __construct($content = '', $statusCode = 200, array $headers = array(), $message = null, $code = 0, \Exception $previous = null)
+    public function __construct($content = '', $statusCode = 200, array $headers = [], $message = null, $code = 0, \Exception $previous = null)
     {
         $this->content = $content;
         $this->statusCode = $statusCode;
