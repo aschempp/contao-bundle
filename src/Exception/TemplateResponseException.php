@@ -24,7 +24,7 @@ class TemplateResponseException extends ResponseException
     /**
      * Constructor
      *
-     * @param string     $template   The template path
+     * @param string     $template   The template name
      * @param int        $statusCode The HTTP status code
      * @param array      $headers    An array of HTTP headers
      * @param string     $message    The exception message
@@ -39,7 +39,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Return the template path
+     * Return the template name
      *
      * @return string
      */
