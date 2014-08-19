@@ -41,12 +41,12 @@ class ContaoLoader extends Loader
 
         $routes = new RouteCollection();
 
-        $defaults = array(
+        $defaults = [
             '_controller' => 'ContaoBundle:Frontend:index'
-        );
+        ];
 
         $pattern = '/{alias}';
-        $require = array('alias' => '.*');
+        $require = ['alias' => '.*'];
 
         // URL suffix
         if ($suffix != '') {
