@@ -12,6 +12,8 @@
 
 namespace Contao\ContaoBundle\Exception;
 
+use Contao\TemplateLoader;
+
 /**
  * Creates a response object from a template
  *
@@ -55,37 +57,15 @@ class TemplateResponseException extends ResponseException
      */
     public function getContent()
     {
-        $file = $this->getTemplatePath();
-
-        if ($file === false) {
+        try {
+            $file = TemplateLoader::getPath($this->template, 'html5');
+        } catch (\Exception $e) {
             return $this->getMessage();
         }
 
         ob_start();
-        include TL_ROOT . '/' . $file;
+        include $file;
 
         return ob_get_clean();
-    }
-
-    /**
-     * Search for a custom template and return the path
-     *
-     * @return string|bool The custom template path or false if there is no custom template
-     */
-    protected function getTemplatePath()
-    {
-        if ($this->template == '') {
-            return false;
-        }
-
-        if (file_exists(TL_ROOT . '/templates/' . $this->template . '.html5')) {
-            return 'templates/' . $this->template . '.html5';
-        }
-
-        if (file_exists(TL_ROOT . '/system/modules/core/templates/backend/' . $this->template . '.html5')) {
-            return 'system/modules/core/templates/backend/' . $this->template . '.html5';
-        }
-
-        return false;
     }
 }
