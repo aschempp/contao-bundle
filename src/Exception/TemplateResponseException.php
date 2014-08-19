@@ -55,14 +55,14 @@ class TemplateResponseException extends ResponseException
      */
     public function getContent()
     {
-        $strFile = $this->getTemplateFile();
+        $file = $this->getTemplateFile();
 
-        if ($strFile === false) {
+        if ($file === false) {
             return $this->getMessage();
         }
 
         ob_start();
-        include $strFile;
+        include $file;
 
         return ob_get_clean();
     }
@@ -78,12 +78,21 @@ class TemplateResponseException extends ResponseException
             return false;
         }
 
-        if (file_exists(TL_ROOT . '/templates/' . $this->template . '.html5')) {
-            return TL_ROOT . '/templates/' . $this->template . '.html5';
+        $filename = basename($this->template);
+
+        // Search in root template folder for a custom version
+        if (file_exists(TL_ROOT . '/templates/' . $filename . '.html5')) {
+            return TL_ROOT . '/templates/' . $filename . '.html5';
         }
 
-        if (file_exists(TL_ROOT . '/system/modules/core/templates/backend/' . $this->template . '.html5')) {
-            return TL_ROOT . '/system/modules/core/templates/backend/' . $this->template . '.html5';
+        // If template is a relative path inside Contao
+        if (file_exists(TL_ROOT . '/' . $this->template)) {
+            return TL_ROOT . '/' . $this->template;
+        }
+
+        // For Contao core exceptions (previous "die_nicely")
+        if (file_exists(TL_ROOT . '/system/modules/core/templates/backend/' . $filename . '.html5')) {
+            return TL_ROOT . '/system/modules/core/templates/backend/' . $filename . '.html5';
         }
 
         return false;
