@@ -1,27 +1,31 @@
 <?php
+
 /**
- * Created by PhpStorm.
- * User: aschempp
- * Date: 16.08.14
- * Time: 08:04
+ * Contao Open Source CMS
+ *
+ * Copyright (c) 2005-2014 Leo Feyer
+ *
+ * @package Contao\ContaoBundle
+ * @link    https://contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
 namespace Contao\ContaoBundle\EventListener;
 
-
 use Contao\Config;
 use Contao\Controller;
 use Contao\Environment;
-use Contao\FrontendIndex;
 use Contao\Input;
 use Contao\Session;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-
 /**
- * Output page from cache without loading controllers
+ * Outputs a page from cache without loading controllers
+ *
+ * @author Leo Feyer <https://contao.org>
+ * @author Andreas Schempp <http://terminal42.ch>
  */
 class OutputFromCacheListener
 {
@@ -30,7 +34,7 @@ class OutputFromCacheListener
     /**
      * Constructor
      *
-     * @param Config $config The Contao config
+     * @param Config $config The Contao configuration object
      */
     public function __construct(Config $config)
     {
@@ -38,16 +42,14 @@ class OutputFromCacheListener
     }
 
     /**
-     * Output cache for current URL if available before the router handles anything
+     * Output the cached version of a page before the router handles anything
      *
      * @param GetResponseEvent $event The kernel.request event
-     *
-     * @throws \Exception
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         // Build the page if a user is (potentially) logged in or there is POST data
-        if (!empty($_POST) || Input::cookie('FE_USER_AUTH') || Input::cookie('FE_AUTO_LOGIN') || $_SESSION['DISABLE_CACHE'] || isset($_SESSION['LOGIN_ERROR']) || Config::get('debugMode')) {
+        if (!empty($_POST) || Input::cookie('FE_USER_AUTH') || Input::cookie('FE_AUTO_LOGIN') || $_SESSION['DISABLE_CACHE'] || isset($_SESSION['LOGIN_ERROR']) || $this->config->get('debugMode')) {
             return;
         }
 
@@ -77,12 +79,12 @@ class OutputFromCacheListener
             }
         }
 
-        $found = false;
+        $found     = false;
         $cacheFile = null;
 
         // Check for a mobile layout
         if (Input::cookie('TL_VIEW') == 'mobile' || (Environment::get('agent')->mobile && Input::cookie('TL_VIEW') != 'desktop')) {
-            $cacheKey = md5($cacheKey . '.mobile');
+            $cacheKey  = md5($cacheKey . '.mobile');
             $cacheFile = TL_ROOT . '/system/cache/html/' . substr($cacheKey, 0, 1) . '/' . $cacheKey . '.html';
 
             if (file_exists($cacheFile)) {
@@ -92,7 +94,7 @@ class OutputFromCacheListener
 
         // Check for a regular layout
         if (!$found) {
-            $cacheKey = md5($cacheKey);
+            $cacheKey  = md5($cacheKey);
             $cacheFile = TL_ROOT . '/system/cache/html/' . substr($cacheKey, 0, 1) . '/' . $cacheKey . '.html';
 
             if (file_exists($cacheFile)) {
@@ -105,9 +107,9 @@ class OutputFromCacheListener
             return;
         }
 
-        $expire = null;
+        $expire  = null;
         $content = null;
-        $type = null;
+        $type    = null;
 
         // Include the file
         ob_start();
@@ -120,16 +122,15 @@ class OutputFromCacheListener
         }
 
         // Read the buffer
-        $buffer = ob_get_contents();
-        ob_end_clean();
+        $buffer = ob_get_clean();
 
         // Session required to determine the referer
         $session = Session::getInstance();
-        $data = $session->getData();
+        $data    = $session->getData();
 
         // Set the new referer
         if (!isset($_GET['pdf']) && !isset($_GET['file']) && !isset($_GET['id']) && $data['referer']['current'] != Environment::get('requestUri')) {
-            $data['referer']['last'] = $data['referer']['current'];
+            $data['referer']['last']    = $data['referer']['current'];
             $data['referer']['current'] = substr(Environment::get('requestUri'), strlen(Environment::get('path')) + 1);
         }
 
@@ -162,13 +163,13 @@ class OutputFromCacheListener
         $response->headers->set('Content-Type', $content . '; charset=' . $this->config->get('characterSet'));
 
         // Send the cache headers
-        if ($expire !== null && ($this->config->('cacheMode') == 'both' || $this->config->get('cacheMode') == 'browser')) {
+        if ($expire !== null && ($this->config->get('cacheMode') == 'both' || $this->config->get('cacheMode') == 'browser')) {
             $response->headers->set('Cache-Control', 'public, max-age=' . ($expire - time()));
             $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
             $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');
             $response->headers->set('Pragma', 'public');
         } else {
-            $response->headers->set('Cache-Control', array('no-cache', 'pre-check=0, post-check=0'));
+            $response->headers->set('Cache-Control', ['no-cache', 'pre-check=0, post-check=0']);
             $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
             $response->headers->set('Expires', 'Fri, 06 Jun 1975 15:10:00 GMT');
             $response->headers->set('Pragma', 'no-cache');
