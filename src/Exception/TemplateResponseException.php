@@ -55,7 +55,7 @@ class TemplateResponseException extends ResponseException
      */
     public function getContent()
     {
-        $file = $this->getTemplateFile();
+        $file = $this->getTemplatePath();
 
         if ($file === false) {
             return $this->getMessage();
@@ -72,7 +72,7 @@ class TemplateResponseException extends ResponseException
      *
      * @return string|bool The custom template path or false if there is no custom template
      */
-    protected function getTemplateFile()
+    protected function getTemplatePath()
     {
         if ($this->template == '') {
             return false;
