@@ -22,6 +22,7 @@ use Contao\TemplateLoader;
 class TemplateResponseException extends ResponseException
 {
     private $template;
+    private $extensions = ['html5'];
 
     /**
      * Constructor
@@ -84,14 +85,20 @@ class TemplateResponseException extends ResponseException
             return false;
         }
 
-        $name = basename($this->template);
+        $extension = pathinfo($this->template, PATHINFO_EXTENSION);
 
-        if (file_exists(TL_ROOT . '/templates/' . $name . '.html5')) {
-            return TL_ROOT . '/templates/' . $name . '.html5';
+        if (!in_array($extension, $this->extensions)) {
+            return false;
         }
 
-        if (file_exists(TL_ROOT . '/' . $this->template . '.html5')) {
-            return TL_ROOT . '/' . $this->template . '.html5';
+        $name = basename($this->template);
+
+        if (file_exists(TL_ROOT . '/templates/' . $name)) {
+            return TL_ROOT . '/templates/' . $name;
+        }
+
+        if (file_exists(TL_ROOT . '/' . $this->template)) {
+            return TL_ROOT . '/' . $this->template;
         }
 
         return false;
