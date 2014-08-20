@@ -12,6 +12,8 @@
 
 namespace Contao\ContaoBundle\Exception;
 
+use Contao\TemplateLoader;
+
 /**
  * Creates a response object from a template
  *
@@ -20,11 +22,12 @@ namespace Contao\ContaoBundle\Exception;
 class TemplateResponseException extends ResponseException
 {
     private $template;
+    private $extensions = ['html5'];
 
     /**
      * Constructor
      *
-     * @param string     $template   The template name
+     * @param string     $template   The template path
      * @param int        $statusCode The HTTP status code
      * @param array      $headers    An array of HTTP headers
      * @param string     $message    The exception message
@@ -39,7 +42,7 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Return the template name
+     * Return the template path
      *
      * @return string
      */
@@ -55,7 +58,7 @@ class TemplateResponseException extends ResponseException
      */
     public function getContent()
     {
-        $file = $this->getTemplateFile();
+        $file = $this->getTemplatePath();
 
         if ($file === false) {
             return $this->getMessage();
@@ -68,31 +71,34 @@ class TemplateResponseException extends ResponseException
     }
 
     /**
-     * Search for a custom template and return the path
+     * Resolve the template path
      *
-     * @return string|bool The custom template path or false if there is no custom template
+     * @return string|bool The template path or false if the template does not exist
      */
-    protected function getTemplateFile()
+    protected function getTemplatePath()
     {
         if ($this->template == '') {
             return false;
         }
 
-        $filename = basename($this->template);
-
-        // Search in root template folder for a custom version
-        if (file_exists(TL_ROOT . '/templates/' . $filename . '.html5')) {
-            return TL_ROOT . '/templates/' . $filename . '.html5';
+        if (strpos($this->template, '../') !== false) {
+            return false;
         }
 
-        // If template is a relative path inside Contao
+        $extension = pathinfo($this->template, PATHINFO_EXTENSION);
+
+        if (!in_array($extension, $this->extensions)) {
+            return false;
+        }
+
+        $name = basename($this->template);
+
+        if (file_exists(TL_ROOT . '/templates/' . $name)) {
+            return TL_ROOT . '/templates/' . $name;
+        }
+
         if (file_exists(TL_ROOT . '/' . $this->template)) {
             return TL_ROOT . '/' . $this->template;
-        }
-
-        // For Contao core exceptions (previous "die_nicely")
-        if (file_exists(TL_ROOT . '/system/modules/core/templates/backend/' . $filename . '.html5')) {
-            return TL_ROOT . '/system/modules/core/templates/backend/' . $filename . '.html5';
         }
 
         return false;
