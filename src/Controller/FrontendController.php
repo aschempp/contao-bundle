@@ -13,7 +13,7 @@
 namespace Contao\ContaoBundle\Controller;
 
 use Contao\FrontendIndex;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller as SymfonyController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Leo Feyer <https://contao.org>
  */
-class FrontendController extends SymfonyController
+class FrontendController extends Controller
 {
     public function indexAction()
     {
