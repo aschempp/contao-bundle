@@ -26,7 +26,7 @@ class TemplateResponseException extends ResponseException
     /**
      * Constructor
      *
-     * @param string     $template   The template name
+     * @param string     $template   The template path
      * @param int        $statusCode The HTTP status code
      * @param array      $headers    An array of HTTP headers
      * @param string     $message    The exception message
@@ -35,13 +35,13 @@ class TemplateResponseException extends ResponseException
      */
     public function __construct($template, $statusCode = 200, array $headers = [], $message = null, $code = 0, \Exception $previous = null)
     {
-        $this->template = basename($template);
+        $this->template = $template;
 
         parent::__construct('', $statusCode, $message, $headers, $code, $previous);
     }
 
     /**
-     * Return the template name
+     * Return the template path
      *
      * @return string
      */
@@ -57,9 +57,9 @@ class TemplateResponseException extends ResponseException
      */
     public function getContent()
     {
-        try {
-            $file = TemplateLoader::getPath($this->template, 'html5');
-        } catch (\Exception $e) {
+        $file = $this->getTemplatePath();
+
+        if ($file === false) {
             return $this->getMessage();
         }
 
@@ -67,5 +67,33 @@ class TemplateResponseException extends ResponseException
         include $file;
 
         return ob_get_clean();
+    }
+
+    /**
+     * Resolve the template path
+     *
+     * @return string|bool The template path or false if the template does not exist
+     */
+    protected function getTemplatePath()
+    {
+        if ($this->template == '') {
+            return false;
+        }
+
+        if (strpos($this->template, '../') !== false) {
+            return false;
+        }
+
+        $name = basename($this->template);
+
+        if (file_exists(TL_ROOT . '/templates/' . $name . '.html5')) {
+            return TL_ROOT . '/templates/' . $name . '.html5';
+        }
+
+        if (file_exists(TL_ROOT . '/' . $this->template . '.html5')) {
+            return TL_ROOT . '/' . $this->template . '.html5';
+        }
+
+        return false;
     }
 }
