@@ -30,9 +30,6 @@ class FrontendController extends SymfonyController
         $controller = new FrontendIndex;
         $controller->run();
 
-        $buffer = ob_get_contents();
-        ob_end_clean();
-
-        return new Response($buffer);
+        return new Response(ob_get_clean());
     }
 }
