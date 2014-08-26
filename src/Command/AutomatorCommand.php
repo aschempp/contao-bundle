@@ -57,7 +57,7 @@ class AutomatorCommand extends ContainerAwareCommand
         $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
 
         foreach ($methods as $method) {
-            if ($method->class == 'Contao\Automator' && $method->name != '__construct') {
+            if ('Contao\Automator' === $method->class && '__construct' !== $method->name) {
                 $commands[] = $method->name;
             }
         }
@@ -65,7 +65,7 @@ class AutomatorCommand extends ContainerAwareCommand
         $task = $input->getArgument('task');
 
         // Let the user choose if no task is given
-        if ($task === null) {
+        if (null === $task) {
 
             /** @var QuestionHelper $helper */
             $helper = $this->getHelper('question');

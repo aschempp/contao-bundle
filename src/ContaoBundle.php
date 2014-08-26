@@ -71,7 +71,7 @@ class ContaoBundle extends Bundle
     {
         global $objConfig;
 
-        if ($objConfig !== null) {
+        if (null !== $objConfig) {
             return;
         }
 
@@ -89,7 +89,7 @@ class ContaoBundle extends Bundle
         }
 
         // Define the login status constants in the back end (see #4099, #5279)
-        if (TL_MODE == 'BE') {
+        if ('BE' === TL_MODE) {
             define('BE_USER_LOGGED_IN', false);
             define('FE_USER_LOGGED_IN', false);
         }
@@ -136,7 +136,7 @@ class ContaoBundle extends Bundle
         // Define the relative path to the installation (see #5339)
         if (Config::has('websitePath') && TL_SCRIPT != 'contao/install.php') {
             Environment::set('path', Config::get('websitePath'));
-        } elseif (TL_MODE == 'BE') {
+        } elseif ('BE' === TL_MODE) {
             Environment::set('path', preg_replace('/\/contao\/[a-z]+\.php$/i', '', Environment::get('scriptName')));
         }
 
@@ -164,7 +164,7 @@ class ContaoBundle extends Bundle
         $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
 
         // Show the "insecure document root" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && substr(Environment::get('path'), -4) == '/web' && !Config::get('ignoreInsecureRoot')) {
+        if ('cli' !== PHP_SAPI && 'contao/install.php' !== TL_SCRIPT && '/web' === substr(Environment::get('path'), -4) && !Config::get('ignoreInsecureRoot')) {
             die_nicely('be_insecure', 'Your installation is not secure. Please set the document root to the <code>/web</code> subfolder.');
         }
 
@@ -178,7 +178,7 @@ class ContaoBundle extends Bundle
         Input::initialize();
 
         // Always show error messages if logged into the install tool (see #5001)
-        if (Input::cookie('TL_INSTALL_AUTH') && !empty($_SESSION['TL_INSTALL_AUTH']) && Input::cookie('TL_INSTALL_AUTH') == $_SESSION['TL_INSTALL_AUTH'] && $_SESSION['TL_INSTALL_EXPIRE'] > time()) {
+        if (Input::cookie('TL_INSTALL_AUTH') && !empty($_SESSION['TL_INSTALL_AUTH']) && Input::cookie('TL_INSTALL_AUTH') === $_SESSION['TL_INSTALL_AUTH'] && $_SESSION['TL_INSTALL_EXPIRE'] > time()) {
             Config::set('displayErrors', 1);
         }
 

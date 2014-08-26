@@ -77,6 +77,6 @@ class ContaoLoader extends Loader
 
     public function supports($resource, $type = null)
     {
-        return $type === 'contao_frontend';
+        return 'contao_frontend' === $type;
     }
 }
