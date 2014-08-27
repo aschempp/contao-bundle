@@ -16,14 +16,19 @@ use Contao\ContaoBundle\Routing\ContaoLoader;
 
 class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 {
+    protected $config;
+
+    public function setUp()
+    {
+        $this->config = $this->getMock('Contao\Config', null, [], '', false);
+    }
+
     public function testLoadWithoutLanguage()
     {
-        $config = $this->getMock('Contao\Config', null, [], '', false);
+        $this->config->set('urlSuffix', '.html');
+        $this->config->set('addLanguageToUrl', false);
 
-        $config->set('urlSuffix', '.html');
-        $config->set('addLanguageToUrl', false);
-
-        $loader     = new ContaoLoader($config);
+        $loader     = new ContaoLoader($this->config);
         $collection = $loader->load(null, null);
 
         $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
@@ -47,12 +52,10 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadWitLanguage()
     {
-        $config = $this->getMock('Contao\Config', null, [], '', false);
+        $this->config->set('urlSuffix', '.html');
+        $this->config->set('addLanguageToUrl', true);
 
-        $config->set('urlSuffix', '.html');
-        $config->set('addLanguageToUrl', true);
-
-        $loader     = new ContaoLoader($config);
+        $loader     = new ContaoLoader($this->config);
         $collection = $loader->load(null, null);
 
         $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
@@ -86,12 +89,10 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadWithoutLanguageAndWithoutSuffix()
     {
-        $config = $this->getMock('Contao\Config', null, [], '', false);
+        $this->config->set('urlSuffix', '');
+        $this->config->set('addLanguageToUrl', false);
 
-        $config->set('urlSuffix', '');
-        $config->set('addLanguageToUrl', false);
-
-        $loader     = new ContaoLoader($config);
+        $loader     = new ContaoLoader($this->config);
         $collection = $loader->load(null, null);
 
         $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
@@ -115,12 +116,10 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadWithLanguageAndWithoutSuffix()
     {
-        $config = $this->getMock('Contao\Config', null, [], '', false);
+        $this->config->set('urlSuffix', '');
+        $this->config->set('addLanguageToUrl', true);
 
-        $config->set('urlSuffix', '');
-        $config->set('addLanguageToUrl', true);
-
-        $loader     = new ContaoLoader($config);
+        $loader     = new ContaoLoader($this->config);
         $collection = $loader->load(null, null);
 
         $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
@@ -154,8 +153,7 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function testSupportsContaoFrontend()
     {
-        $config = $this->getMock('Contao\Config', null, [], '', false);
-        $loader = new ContaoLoader($config);
+        $loader = new ContaoLoader($this->config);
 
         $this->assertTrue($loader->supports(null, 'contao_frontend'));
     }
