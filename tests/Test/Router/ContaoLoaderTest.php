@@ -12,10 +12,12 @@
 
 namespace Contao\Test;
 
+use Contao\Config;
 use Contao\ContaoBundle\Routing\ContaoLoader;
 
 class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var Config */
     protected $config;
 
     public function setUp()
@@ -23,6 +25,9 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
         $this->config = $this->getMock('Contao\Config', null, [], '', false);
     }
 
+    /**
+     * Test with URL suffix and without language
+     */
     public function testLoadWithoutLanguage()
     {
         $this->config->set('urlSuffix', '.html');
@@ -50,6 +55,9 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('html', $routes['contao_root']->getDefault('_format'));
     }
 
+    /**
+     * Test with URL suffix and with language
+     */
     public function testLoadWitLanguage()
     {
         $this->config->set('urlSuffix', '.html');
@@ -87,6 +95,9 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('html', $routes['contao_root']->getDefault('_format'));
     }
 
+    /**
+     * Test without URL suffix and without language
+     */
     public function testLoadWithoutLanguageAndWithoutSuffix()
     {
         $this->config->set('urlSuffix', '');
@@ -114,6 +125,9 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $routes['contao_root']->getDefault('_format'));
     }
 
+    /**
+     * Test without URL suffix and with language
+     */
     public function testLoadWithLanguageAndWithoutSuffix()
     {
         $this->config->set('urlSuffix', '');
@@ -151,6 +165,9 @@ class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $routes['contao_root']->getDefault('_format'));
     }
 
+    /**
+     * Ensure that the loader supports "contao_frontend"
+     */
     public function testSupportsContaoFrontend()
     {
         $loader = new ContaoLoader($this->config);
