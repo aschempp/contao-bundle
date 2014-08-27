@@ -29,7 +29,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  */
 class OutputFromCacheListener
 {
-    private $config;
+    protected $config;
 
     /**
      * Constructor
@@ -49,16 +49,21 @@ class OutputFromCacheListener
     public function onKernelRequest(GetResponseEvent $event)
     {
         // Build the page if a user is (potentially) logged in or there is POST data
-        if (!empty($_POST) || Input::cookie('FE_USER_AUTH') || Input::cookie('FE_AUTO_LOGIN') || $_SESSION['DISABLE_CACHE'] || isset($_SESSION['LOGIN_ERROR']) || $this->config->get('debugMode')) {
+        if (
+            !empty($_POST)
+            || Input::cookie('FE_USER_AUTH')
+            || Input::cookie('FE_AUTO_LOGIN')
+            || $_SESSION['DISABLE_CACHE']
+            || isset($_SESSION['LOGIN_ERROR'])
+            || $this->config->get('debugMode')
+        ) {
             return;
         }
 
-        /**
-         * If the request string is empty, look for a cached page matching the
-         * primary browser language. This is a compromise between not caching
-         * empty requests at all and considering all browser languages, which
-         * is not possible for various reasons.
-         */
+        // If the request string is empty, look for a cached page matching the
+        // primary browser language. This is a compromise between not caching
+        // empty requests at all and considering all browser languages, which
+        // is not possible for various reasons.
         if ('' === Environment::get('request') || 'index.php' === Environment::get('request')) {
 
             // Return if the language is added to the URL and the empty domain will be redirected
@@ -83,7 +88,10 @@ class OutputFromCacheListener
         $cacheFile = null;
 
         // Check for a mobile layout
-        if ('mobile' === Input::cookie('TL_VIEW') || (Environment::get('agent')->mobile && 'desktop' !== Input::cookie('TL_VIEW'))) {
+        if (
+            'mobile' === Input::cookie('TL_VIEW')
+            || (Environment::get('agent')->mobile && 'desktop' !== Input::cookie('TL_VIEW'))
+        ) {
             $cacheKey  = md5($cacheKey . '.mobile');
             $cacheFile = TL_ROOT . '/system/cache/html/' . substr($cacheKey, 0, 1) . '/' . $cacheKey . '.html';
 
@@ -129,7 +137,12 @@ class OutputFromCacheListener
         $data    = $session->getData();
 
         // Set the new referer
-        if (!isset($_GET['pdf']) && !isset($_GET['file']) && !isset($_GET['id']) && $data['referer']['current'] != Environment::get('requestUri')) {
+        if (
+            !isset($_GET['pdf'])
+            && !isset($_GET['file'])
+            && !isset($_GET['id'])
+            && $data['referer']['current'] != Environment::get('requestUri')
+        ) {
             $data['referer']['last']    = $data['referer']['current'];
             $data['referer']['current'] = substr(Environment::get('requestUri'), strlen(Environment::get('path')) + 1);
         }
@@ -163,7 +176,10 @@ class OutputFromCacheListener
         $response->headers->set('Content-Type', $content . '; charset=' . $this->config->get('characterSet'));
 
         // Send the cache headers
-        if (null !== $expire && ('both' === $this->config->get('cacheMode') || 'browser' === $this->config->get('cacheMode'))) {
+        if (
+            null !== $expire
+            && ('both' === $this->config->get('cacheMode') || 'browser' === $this->config->get('cacheMode'))
+        ) {
             $response->headers->set('Cache-Control', 'public, max-age=' . ($expire - time()));
             $response->headers->set('Expires', gmdate('D, d M Y H:i:s', $expire) . ' GMT');
             $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s', time()) . ' GMT');

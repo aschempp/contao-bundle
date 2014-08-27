@@ -12,8 +12,8 @@
 
 namespace Contao\ContaoBundle\Routing;
 
+use Contao\Config;
 use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -25,19 +25,22 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class ContaoLoader extends Loader
 {
-    protected $container;
+    protected $config;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * Constructor
+     *
+     * @param Config $config The Contao configuration object
+     */
+    public function __construct(Config $config)
     {
-        $this->container = $container;
+        $this->config = $config;
     }
 
     public function load($resource, $type = null)
     {
-        $config = $this->container->get('contao.config');
-
-        $addlang = $config->get('addLanguageToUrl');
-        $suffix  = substr($config->get('urlSuffix'), 1);
+        $addlang = $this->config->get('addLanguageToUrl');
+        $suffix  = substr($this->config->get('urlSuffix'), 1);
 
         $routes = new RouteCollection();
 

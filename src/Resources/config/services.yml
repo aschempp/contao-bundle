@@ -3,7 +3,7 @@ services:
         class: Contao\ContaoBundle\Routing\ContaoLoader
         tags:
             - { name: routing.loader }
-        arguments: ['@service_container']
+        arguments: ['@contao.config']
 
     contao.config:
         class: Contao\Config

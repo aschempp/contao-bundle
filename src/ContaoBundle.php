@@ -164,21 +164,35 @@ class ContaoBundle extends Bundle
         $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
 
         // Show the "insecure document root" message
-        if ('cli' !== PHP_SAPI && 'contao/install.php' !== TL_SCRIPT && '/web' === substr(Environment::get('path'), -4) && !Config::get('ignoreInsecureRoot')) {
+        if (
+            'cli' !== PHP_SAPI
+            && 'contao/install.php' !== TL_SCRIPT
+            && '/web' === substr(Environment::get('path'), -4)
+            && !Config::get('ignoreInsecureRoot')
+        ) {
             die_nicely('be_insecure', 'Your installation is not secure. Please set the document root to the <code>/web</code> subfolder.');
         }
 
         $objConfig = Config::getInstance();
 
         // Show the "incomplete installation" message
-        if (PHP_SAPI != 'cli' && TL_SCRIPT != 'contao/install.php' && !$objConfig->isComplete()) {
+        if (
+            PHP_SAPI != 'cli'
+            && TL_SCRIPT != 'contao/install.php'
+            && !$objConfig->isComplete()
+        ) {
             die_nicely('be_incomplete', 'The installation has not been completed. Open the Contao install tool to continue.');
         }
 
         Input::initialize();
 
         // Always show error messages if logged into the install tool (see #5001)
-        if (Input::cookie('TL_INSTALL_AUTH') && !empty($_SESSION['TL_INSTALL_AUTH']) && Input::cookie('TL_INSTALL_AUTH') === $_SESSION['TL_INSTALL_AUTH'] && $_SESSION['TL_INSTALL_EXPIRE'] > time()) {
+        if (
+            Input::cookie('TL_INSTALL_AUTH')
+            && !empty($_SESSION['TL_INSTALL_AUTH'])
+            && Input::cookie('TL_INSTALL_AUTH') === $_SESSION['TL_INSTALL_AUTH']
+            && $_SESSION['TL_INSTALL_EXPIRE'] > time()
+        ) {
             Config::set('displayErrors', 1);
         }
 
