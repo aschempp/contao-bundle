@@ -1,0 +1,160 @@
+<?php
+
+/**
+ * Contao Open Source CMS
+ *
+ * Copyright (c) 2005-2014 Leo Feyer
+ *
+ * @package Contao\ContaoBundle
+ * @link    https://contao.org
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ */
+
+namespace Contao\Test;
+
+use Contao\ContaoBundle\Routing\ContaoLoader;
+
+class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
+{
+    protected $config;
+
+    public function setUp()
+    {
+        $this->config = $this->getMock('Contao\Config', null, [], '', false);
+    }
+
+    public function testLoadWithoutLanguage()
+    {
+        $this->config->set('urlSuffix', '.html');
+        $this->config->set('addLanguageToUrl', false);
+
+        $loader     = new ContaoLoader($this->config);
+        $collection = $loader->load(null, null);
+
+        $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
+
+        $routes = $collection->all();
+
+        // contao_default
+        $this->assertArrayHasKey('contao_default', $routes);
+        $this->assertEquals('/{alias}.{_format}', $routes['contao_default']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_default']->getDefault('_controller'));
+        $this->assertEquals('html', $routes['contao_default']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_default']->getRequirement('alias'));
+        $this->assertEquals('html', $routes['contao_default']->getRequirement('_format'));
+
+        // contao_root
+        $this->assertArrayHasKey('contao_root', $routes);
+        $this->assertEquals('/', $routes['contao_root']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_root']->getDefault('_controller'));
+        $this->assertEquals('html', $routes['contao_root']->getDefault('_format'));
+    }
+
+    public function testLoadWitLanguage()
+    {
+        $this->config->set('urlSuffix', '.html');
+        $this->config->set('addLanguageToUrl', true);
+
+        $loader     = new ContaoLoader($this->config);
+        $collection = $loader->load(null, null);
+
+        $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
+
+        $routes = $collection->all();
+
+        // contao_locale
+        $this->assertArrayHasKey('contao_locale', $routes);
+        $this->assertEquals('/{_locale}/{alias}.{_format}', $routes['contao_locale']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_locale']->getDefault('_controller'));
+        $this->assertEquals('html', $routes['contao_locale']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_locale']->getRequirement('alias'));
+        $this->assertEquals('html', $routes['contao_locale']->getRequirement('_format'));
+        $this->assertEquals('[a-z]{2}(\-[A-Z]{2})?', $routes['contao_locale']->getRequirement('_locale'));
+
+        // contao_default
+        $this->assertArrayHasKey('contao_default', $routes);
+        $this->assertEquals('/{alias}.{_format}', $routes['contao_default']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_default']->getDefault('_controller'));
+        $this->assertEquals('html', $routes['contao_default']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_default']->getRequirement('alias'));
+        $this->assertEquals('html', $routes['contao_default']->getRequirement('_format'));
+        $this->assertEquals('[a-z]{2}(\-[A-Z]{2})?', $routes['contao_default']->getRequirement('_locale'));
+
+        // contao_root
+        $this->assertArrayHasKey('contao_root', $routes);
+        $this->assertEquals('/', $routes['contao_root']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_root']->getDefault('_controller'));
+        $this->assertEquals('html', $routes['contao_root']->getDefault('_format'));
+    }
+
+    public function testLoadWithoutLanguageAndWithoutSuffix()
+    {
+        $this->config->set('urlSuffix', '');
+        $this->config->set('addLanguageToUrl', false);
+
+        $loader     = new ContaoLoader($this->config);
+        $collection = $loader->load(null, null);
+
+        $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
+
+        $routes = $collection->all();
+
+        // contao_default
+        $this->assertArrayHasKey('contao_default', $routes);
+        $this->assertEquals('/{alias}', $routes['contao_default']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_default']->getDefault('_controller'));
+        $this->assertEquals('', $routes['contao_default']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_default']->getRequirement('alias'));
+        $this->assertEquals('', $routes['contao_default']->getRequirement('_format'));
+
+        // contao_root
+        $this->assertArrayHasKey('contao_root', $routes);
+        $this->assertEquals('/', $routes['contao_root']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_root']->getDefault('_controller'));
+        $this->assertEquals('', $routes['contao_root']->getDefault('_format'));
+    }
+
+    public function testLoadWithLanguageAndWithoutSuffix()
+    {
+        $this->config->set('urlSuffix', '');
+        $this->config->set('addLanguageToUrl', true);
+
+        $loader     = new ContaoLoader($this->config);
+        $collection = $loader->load(null, null);
+
+        $this->assertInstanceOf('Symfony\Component\Routing\RouteCollection', $collection);
+
+        $routes = $collection->all();
+
+        // contao_locale
+        $this->assertArrayHasKey('contao_locale', $routes);
+        $this->assertEquals('/{_locale}/{alias}', $routes['contao_locale']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_locale']->getDefault('_controller'));
+        $this->assertEquals('', $routes['contao_locale']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_locale']->getRequirement('alias'));
+        $this->assertEquals('', $routes['contao_locale']->getRequirement('_format'));
+        $this->assertEquals('[a-z]{2}(\-[A-Z]{2})?', $routes['contao_locale']->getRequirement('_locale'));
+
+        // contao_default
+        $this->assertArrayHasKey('contao_default', $routes);
+        $this->assertEquals('/{alias}', $routes['contao_default']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_default']->getDefault('_controller'));
+        $this->assertEquals('', $routes['contao_default']->getDefault('_format'));
+        $this->assertEquals('.*', $routes['contao_default']->getRequirement('alias'));
+        $this->assertEquals('', $routes['contao_default']->getRequirement('_format'));
+        $this->assertEquals('[a-z]{2}(\-[A-Z]{2})?', $routes['contao_default']->getRequirement('_locale'));
+
+        // contao_root
+        $this->assertArrayHasKey('contao_root', $routes);
+        $this->assertEquals('/', $routes['contao_root']->getPath());
+        $this->assertEquals('ContaoBundle:Frontend:index', $routes['contao_root']->getDefault('_controller'));
+        $this->assertEquals('', $routes['contao_root']->getDefault('_format'));
+    }
+
+    public function testSupportsContaoFrontend()
+    {
+        $loader = new ContaoLoader($this->config);
+
+        $this->assertTrue($loader->supports(null, 'contao_frontend'));
+    }
+}
