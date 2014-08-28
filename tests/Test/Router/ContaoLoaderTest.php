@@ -10,7 +10,7 @@
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  */
 
-namespace Contao\Test;
+namespace Contao\ContaoBundle\Test\Router;
 
 use Contao\Config;
 use Contao\ContaoBundle\Routing\ContaoLoader;
