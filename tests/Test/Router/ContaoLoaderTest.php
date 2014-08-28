@@ -15,11 +15,19 @@ namespace Contao\ContaoBundle\Test\Router;
 use Contao\Config;
 use Contao\ContaoBundle\Routing\ContaoLoader;
 
+/**
+ * Tests the Contao loader
+ *
+ * @author Leo Feyer <https://contao.org>
+ */
 class ContaoLoaderTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Config */
     protected $config;
 
+    /**
+     * {@inheritdoc}
+     */
     public function setUp()
     {
         $this->config = $this->getMock('Contao\Config', null, [], '', false);

@@ -25,6 +25,7 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class ContaoLoader extends Loader
 {
+    /** @var Config */
     protected $config;
 
     /**
@@ -37,6 +38,9 @@ class ContaoLoader extends Loader
         $this->config = $config;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function load($resource, $type = null)
     {
         $addlang = $this->config->get('addLanguageToUrl');
@@ -78,6 +82,9 @@ class ContaoLoader extends Loader
         return $routes;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function supports($resource, $type = null)
     {
         return 'contao_frontend' === $type;

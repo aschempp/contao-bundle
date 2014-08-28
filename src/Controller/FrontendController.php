@@ -23,11 +23,16 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class FrontendController extends Controller
 {
+    /**
+     * Converts the output of the Contao front end controller into a Symfony response
+     *
+     * @return Response The response object
+     */
     public function indexAction()
     {
         ob_start();
 
-        $controller = new FrontendIndex;
+        $controller = new FrontendIndex();
         $controller->run();
 
         return new Response(ob_get_clean());

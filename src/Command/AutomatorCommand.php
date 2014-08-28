@@ -27,6 +27,9 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
  */
 class AutomatorCommand extends ContainerAwareCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -38,6 +41,9 @@ class AutomatorCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $file = fopen(__FILE__, 'r');
@@ -80,7 +86,7 @@ class AutomatorCommand extends ContainerAwareCommand
             return 1;
         }
 
-        $automator = new Automator;
+        $automator = new Automator();
         $automator->$task();
 
         $output->writeln('<info>The "' . $task . '" task has been completed.</info>');

@@ -22,6 +22,11 @@ use Symfony\Component\HttpKernel\Event\PostResponseEvent;
  */
 class PostFlushListener
 {
+    /**
+     * Triggers the "postFlushData" hook
+     *
+     * @param PostResponseEvent $event The event object
+     */
     public function onKernelTerminate(PostResponseEvent $event)
     {
         if (isset($GLOBALS['TL_HOOKS']['postFlushData']) && is_array($GLOBALS['TL_HOOKS']['postFlushData'])) {

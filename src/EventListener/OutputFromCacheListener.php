@@ -29,6 +29,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
  */
 class OutputFromCacheListener
 {
+    /** @var Config */
     protected $config;
 
     /**
@@ -42,9 +43,9 @@ class OutputFromCacheListener
     }
 
     /**
-     * Output the cached version of a page before the router handles anything
+     * Outputs the cached version of a page before the router handles anything
      *
-     * @param GetResponseEvent $event The kernel.request event
+     * @param GetResponseEvent $event The event object
      */
     public function onKernelRequest(GetResponseEvent $event)
     {

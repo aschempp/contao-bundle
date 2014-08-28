@@ -30,11 +30,17 @@ class ContaoBundle extends Bundle
 {
     protected $loaded = false;
 
+    /**
+     * {@inheritdoc}
+     */
     public function boot()
     {
         $this->initializeContao();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function build(ContainerBuilder $container)
     {
         $this->initializeContao();

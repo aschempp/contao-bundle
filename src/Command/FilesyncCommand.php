@@ -24,6 +24,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class FilesyncCommand extends ContainerAwareCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -32,6 +35,9 @@ class FilesyncCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $file = fopen(__FILE__, 'r');

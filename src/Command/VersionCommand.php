@@ -23,6 +23,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class VersionCommand extends ContainerAwareCommand
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function configure()
     {
         $this
@@ -31,6 +34,9 @@ class VersionCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln(VERSION . '.' . BUILD);
