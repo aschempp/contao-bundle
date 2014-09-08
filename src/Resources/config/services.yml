@@ -1,9 +1,15 @@
+parameters:
+    contao_routing.provider.class: Contao\ContaoBundle\Routing\RouteProvider
+    contao_routing.candidates.class: Symfony\Cmf\Component\Routing\Candidates\Candidates
+
 services:
-    contao.loader:
-        class: Contao\ContaoBundle\Routing\ContaoLoader
-        tags:
-            - { name: routing.loader }
-        arguments: ['@contao.config']
+    contao_routing.provider:
+        class: %contao_routing.provider.class%
+        arguments: ['@contao_routing.candidates', '@contao.config']
+
+    contao_routing.candidates:
+        class: %contao_routing.candidates.class%
+        arguments: [['[a-z]{2}(\-[A-Z]{2})']]
 
     contao.config:
         class: Contao\Config
